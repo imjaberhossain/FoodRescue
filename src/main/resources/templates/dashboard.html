@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Dashboard')}"></head>
+<body class="bg-paper font-sans text-ink antialiased">
+
+<header th:replace="~{fragments :: navbar}"></header>
+
+<main class="mx-auto max-w-6xl px-4 py-8">
+
+    <div th:replace="~{fragments :: flash}"></div>
+
+    <!-- =====================================================================
+         PROVIDER DASHBOARD
+         ===================================================================== -->
+    <th:block th:if="${currentUser.provider}">
+
+        <div class="mb-6">
+            <h1 class="font-display text-3xl font-extrabold">Your food listings</h1>
+            <p class="mt-1 text-ink/70">Post surplus food, review requests, and confirm pickups.</p>
+        </div>
+
+        <dl class="mb-8 grid grid-cols-2 gap-x-6 gap-y-4 border-y border-line py-4 sm:grid-cols-4">
+            <div><dt class="text-sm text-ink/60">Posted</dt><dd class="font-display text-2xl font-extrabold" th:text="${statTotal}">0</dd></div>
+            <div><dt class="text-sm text-ink/60">Waiting for requests</dt><dd class="font-display text-2xl font-extrabold" th:text="${statAvailable}">0</dd></div>
+            <div><dt class="text-sm text-ink/60">Claimed</dt><dd class="font-display text-2xl font-extrabold" th:text="${statClaimed}">0</dd></div>
+            <div><dt class="text-sm text-ink/60">Picked up</dt><dd class="font-display text-2xl font-extrabold" th:text="${statPickedUp}">0</dd></div>
+        </dl>
+
+        <div class="grid gap-8 lg:grid-cols-12">
+
+            <!-- Post food form -->
+            <section class="lg:col-span-5">
+                <h2 class="font-display text-xl font-semibold">Post surplus food</h2>
+
+                <form th:action="@{/listings}" th:object="${listingForm}" method="post"
+                      class="mt-3 space-y-4 rounded-lg border border-line bg-white p-5">
+
+                    <div>
+                        <label for="categoryId" class="fr-label">Food type</label>
+                        <select id="categoryId" th:field="*{categoryId}" class="fr-input">
+                            <option value="">Choose a type</option>
+                            <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}">Cooked meals</option>
+                        </select>
+                        <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></p>
+                    </div>
+
+                    <div>
+                        <label for="title" class="fr-label">What is the food?</label>
+                        <input id="title" type="text" th:field="*{title}" class="fr-input" placeholder="Chicken biryani">
+                        <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="quantity" class="fr-label">Quantity</label>
+                            <input id="quantity" type="number" min="1" th:field="*{quantity}" class="fr-input" placeholder="40">
+                            <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"></p>
+                        </div>
+                        <div>
+                            <label for="unit" class="fr-label">Unit</label>
+                            <input id="unit" type="text" list="unitOptions" th:field="*{unit}" class="fr-input" placeholder="plates">
+                            <datalist id="unitOptions">
+                                <option value="plates"></option>
+                                <option value="kg"></option>
+                                <option value="packets"></option>
+                                <option value="pieces"></option>
+                                <option value="liters"></option>
+                            </datalist>
+                            <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('unit')}" th:errors="*{unit}"></p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="description" class="fr-label">Notes (optional)</label>
+                        <textarea id="description" rows="2" th:field="*{description}" class="fr-input"
+                                  placeholder="Freshly cooked today. Bring your own containers."></textarea>
+                        <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="qualityTag" class="fr-label">Freshness</label>
+                            <select id="qualityTag" th:field="*{qualityTag}" class="fr-input">
+                                <option value="COOKED">Freshly cooked</option>
+                                <option value="FEW_HOURS_OLD">A few hours old</option>
+                                <option value="NEAR_EXPIRY">Near expiry - eat soon</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="estimatedBeneficiaries" class="fr-label">Serves about how many people?</label>
+                            <input id="estimatedBeneficiaries" type="number" min="1" th:field="*{estimatedBeneficiaries}" class="fr-input" placeholder="30">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="pickupLocation" class="fr-label">Pickup location</label>
+                        <input id="pickupLocation" type="text" th:field="*{pickupLocation}" class="fr-input">
+                        <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('pickupLocation')}" th:errors="*{pickupLocation}"></p>
+                    </div>
+
+                    <div>
+                        <label for="city" class="fr-label">City</label>
+                        <input id="city" type="text" th:field="*{city}" class="fr-input">
+                        <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="latitude" class="fr-label">Latitude (optional)</label>
+                            <input id="latitude" type="number" step="0.000001" th:field="*{latitude}" class="fr-input" placeholder="23.780636">
+                        </div>
+                        <div>
+                            <label for="longitude" class="fr-label">Longitude (optional)</label>
+                            <input id="longitude" type="number" step="0.000001" th:field="*{longitude}" class="fr-input" placeholder="90.279900">
+                        </div>
+                    </div>
+                    <p class="-mt-2 text-xs text-ink/50">Adding coordinates lets FoodRescue show you the real distance to each NGO/Volunteer who requests this food.</p>
+
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label for="availableFrom" class="fr-label">Ready for pickup from</label>
+                            <input id="availableFrom" type="datetime-local" th:field="*{availableFrom}" class="fr-input">
+                            <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('availableFrom')}" th:errors="*{availableFrom}"></p>
+                        </div>
+                        <div>
+                            <label for="pickupDeadline" class="fr-label">Pickup deadline</label>
+                            <input id="pickupDeadline" type="datetime-local" th:field="*{pickupDeadline}" class="fr-input">
+                            <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('pickupDeadline')}" th:errors="*{pickupDeadline}"></p>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="fr-btn w-full">Post food listing</button>
+                </form>
+            </section>
+
+            <!-- Requests and listings -->
+            <div class="space-y-8 lg:col-span-7">
+
+                <section>
+                    <h2 class="font-display text-xl font-semibold">Requests on your food</h2>
+                    <p class="mt-1 text-sm text-ink/60">Several NGOs/Volunteers may request the same food. Compare their rating, distance and distribution plan, then accept one - the rest are declined automatically.</p>
+
+                    <div th:if="${#lists.isEmpty(providerClaims)}"
+                         class="mt-3 rounded-lg border border-dashed border-line bg-white p-6 text-sm text-ink/70">
+                        Requests from NGOs and Volunteers will show up here.
+                    </div>
+
+                    <ul th:unless="${#lists.isEmpty(providerClaims)}"
+                        class="mt-3 divide-y divide-line rounded-lg border border-line bg-white">
+                        <li th:each="c : ${providerClaims}" class="space-y-2 p-4">
+                            <div class="flex flex-wrap items-start justify-between gap-2">
+                                <div class="min-w-0">
+                                    <p class="font-medium">
+                                        <span th:text="${c.listing.title}">Chicken biryani</span>
+                                        <span class="font-normal text-ink/60"> - requested by </span>
+                                        <span th:text="${c.claimantName}">NGO name</span>
+                                        <span class="rounded-full bg-ink/5 px-2 py-0.5 text-xs font-medium text-ink/70" th:text="${c.claimantRoleLabel}">NGO</span>
+                                    </p>
+                                    <p class="mt-1 flex flex-wrap items-center gap-3 text-sm text-ink/70">
+                                        <span th:replace="~{fragments :: ratingBadge(${c.claimantAverageRating}, ${c.claimantRatingCount})}"></span>
+                                        <span th:replace="~{fragments :: verificationBadge(${c.claimantVerification})}"></span>
+                                        <span th:if="${c.distanceKm != null}" th:text="${#numbers.formatDecimal(c.distanceKm, 1, 1)} + ' km away'">3.2 km away</span>
+                                        <span th:unless="${c.distanceKm != null}" th:text="${c.claimantCity}">City</span>
+                                    </p>
+                                    <p class="mt-1 text-sm text-ink/70"><span class="font-medium">Distribution plan: </span><span th:text="${c.distributionPlan}">Plan text</span></p>
+                                    <p th:if="${c.claimantPhone}" class="text-sm text-ink/70">Phone: <span th:text="${c.claimantPhone}">01700000000</span></p>
+                                </div>
+                                <span class="shrink-0 rounded-full px-2.5 py-1 text-xs font-medium"
+                                      th:classappend="${c.status.badgeClass}" th:text="${c.status.label}">Waiting</span>
+                            </div>
+
+                            <div class="flex flex-wrap gap-2">
+                                <form th:if="${c.status.name() == 'PENDING'}" th:action="@{/claims/{id}/accept(id=${c.id})}" method="post">
+                                    <button type="submit" class="fr-btn" onclick="return confirm('Accept this request? Other requests for this food will be declined.')">Accept</button>
+                                </form>
+                                <form th:if="${c.status.name() == 'PENDING'}" th:action="@{/claims/{id}/reject(id=${c.id})}" method="post">
+                                    <button type="submit" class="fr-btn-danger">Decline</button>
+                                </form>
+                                <form th:if="${c.status.name() == 'ACCEPTED'}" th:action="@{/claims/{id}/pickup(id=${c.id})}" method="post">
+                                    <button type="submit" class="fr-btn">Confirm pickup</button>
+                                </form>
+
+                                <!-- Rating widget: only after pickup is confirmed -->
+                                <form th:if="${c.status.name() == 'COMPLETED'}" th:action="@{/claims/{id}/rate(id=${c.id})}" method="post"
+                                      class="flex flex-wrap items-center gap-2">
+                                    <label class="text-sm text-ink/70">Rate:</label>
+                                    <select name="ratingValue" class="fr-input w-auto">
+                                        <option value="5">5 - Excellent</option>
+                                        <option value="4">4 - Good</option>
+                                        <option value="3">3 - Okay</option>
+                                        <option value="2">2 - Poor</option>
+                                        <option value="1">1 - Very poor</option>
+                                    </select>
+                                    <input type="text" name="comment" placeholder="Optional comment" class="fr-input w-auto">
+                                    <button type="submit" class="fr-btn-outline">Submit rating</button>
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2 class="font-display text-xl font-semibold">All your listings</h2>
+
+                    <div th:if="${#lists.isEmpty(myListings)}"
+                         class="mt-3 rounded-lg border border-dashed border-line bg-white p-6 text-sm text-ink/70">
+                        You have not posted any food yet. Use the form to post your first listing.
+                    </div>
+
+                    <ul th:unless="${#lists.isEmpty(myListings)}"
+                        class="mt-3 divide-y divide-line rounded-lg border border-line bg-white">
+                        <li th:each="l : ${myListings}"
+                            class="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div class="min-w-0">
+                                <p class="font-medium" th:text="${l.title}">Chicken biryani</p>
+                                <p class="text-sm text-ink/70">
+                                    <span th:text="${l.quantity} + ' ' + ${l.unit}">40 plates</span>,
+                                    <span th:text="${#strings.toLowerCase(l.category.name)}">cooked meals</span>
+                                </p>
+                                <p class="text-sm text-ink/60">
+                                    Pick up by <span th:text="${#temporals.format(l.pickupDeadline, 'dd MMM, hh:mm a')}">21 Sep, 09:00 PM</span>
+                                </p>
+                            </div>
+                            <div class="flex shrink-0 items-center gap-2">
+                                <span th:if="${l.status.name() == 'AVAILABLE'}"
+                                      class="rounded-full px-2.5 py-1 text-xs font-medium"
+                                      th:classappend="${l.urgencyLevel.badgeClass}" th:text="${l.timeLeftText}">2h left</span>
+                                <span class="rounded-full px-2.5 py-1 text-xs font-medium"
+                                      th:classappend="${l.status.badgeClass}" th:text="${l.status.label}">Available</span>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </th:block>
+
+    <!-- =====================================================================
+         NGO / VOLUNTEER DASHBOARD
+         ===================================================================== -->
+    <th:block th:if="${currentUser.claimant}">
+
+        <div class="mb-6">
+            <h1 class="font-display text-3xl font-extrabold">Available food</h1>
+            <p class="mt-1 text-ink/70">The food closest to its pickup deadline is shown first. Explain how you'll distribute it when you request.</p>
+        </div>
+
+        <form th:action="@{/dashboard}" method="get" class="mb-6 flex max-w-xl gap-2">
+            <label for="keyword" class="sr-only">Search by city or area</label>
+            <input id="keyword" type="search" name="keyword" th:value="${keyword}" class="fr-input"
+                   placeholder="Search by city or area, like Dhaka or Mirpur">
+            <button type="submit" class="fr-btn">Search</button>
+        </form>
+
+        <div class="grid gap-8 lg:grid-cols-12">
+
+            <section class="lg:col-span-8">
+                <h2 class="font-display text-xl font-semibold">
+                    <span th:text="${#lists.size(availableListings)}">0</span> available
+                    <span th:if="${!#strings.isEmpty(keyword)}" th:text="'for &quot;' + ${keyword} + '&quot;'"></span>
+                </h2>
+
+                <div th:if="${#lists.isEmpty(availableListings)}"
+                     class="mt-3 rounded-lg border border-dashed border-line bg-white p-8 text-sm text-ink/70">
+                    <p th:if="${!#strings.isEmpty(keyword)}">
+                        No available food matches this search. Try another city or area, or
+                        <a th:href="@{/dashboard}" class="font-medium text-leaf underline">see all available food</a>.
+                    </p>
+                    <p th:if="${#strings.isEmpty(keyword)}">
+                        No food is available right now. New listings appear here as soon as providers post them.
+                    </p>
+                </div>
+
+                <div th:unless="${#lists.isEmpty(availableListings)}" class="mt-3 space-y-3">
+                    <th:block th:each="l : ${availableListings}">
+                        <article th:replace="~{fragments :: listingRow(${l}, 'claimant')}"></article>
+                    </th:block>
+                </div>
+            </section>
+
+            <aside class="lg:col-span-4">
+                <h2 class="font-display text-xl font-semibold">Your requests</h2>
+
+                <div th:if="${#lists.isEmpty(myClaims)}"
+                     class="mt-3 rounded-lg border border-dashed border-line bg-white p-6 text-sm text-ink/70">
+                    Food you request will be listed here, along with the provider's decision.
+                </div>
+
+                <ul th:unless="${#lists.isEmpty(myClaims)}"
+                    class="mt-3 divide-y divide-line rounded-lg border border-line bg-white">
+                    <li th:each="c : ${myClaims}" class="space-y-1 p-4">
+                        <div class="flex items-start justify-between gap-2">
+                            <p class="font-medium" th:text="${c.listing.title}">Chicken biryani</p>
+                            <span class="shrink-0 rounded-full px-2.5 py-1 text-xs font-medium"
+                                  th:classappend="${c.status.badgeClass}" th:text="${c.status.label}">Waiting</span>
+                        </div>
+                        <p class="text-sm text-ink/70">
+                            <span th:text="${c.listing.quantity} + ' ' + ${c.listing.unit}">40 plates</span>
+                            from <span th:text="${c.listing.provider.businessName}">Provider</span>
+                        </p>
+                        <p class="text-sm text-ink/70" th:text="${c.listing.pickupLocation} + ', ' + ${c.listing.city}">Location</p>
+                        <p th:if="${c.status.name() == 'ACCEPTED' and c.listing.provider.user.phone}" class="text-sm text-ink/70">
+                            Phone: <span th:text="${c.listing.provider.user.phone}">01700000000</span>
+                        </p>
+                        <p th:if="${c.status.name() == 'ACCEPTED'}" class="text-sm font-medium">
+                            Pick up by <span th:text="${#temporals.format(c.listing.pickupDeadline, 'dd MMM, hh:mm a')}">21 Sep, 09:00 PM</span>
+                        </p>
+
+                        <!-- Mandatory: after pickup, show proof of distribution -->
+                        <div th:if="${c.status.name() == 'COMPLETED' and c.distributionReport == null}"
+                             class="mt-2 rounded-md border border-turmeric/40 bg-turmeric/10 p-3">
+                            <p class="text-xs font-medium text-ink">Please confirm how you distributed this food (required):</p>
+                            <form th:action="@{/claims/{id}/distribution-proof(id=${c.id})}" method="post" enctype="multipart/form-data" class="mt-2 space-y-2">
+                                <textarea name="report" rows="2" required class="fr-input" placeholder="e.g. Distributed to 28 families near Mirpur-10 on the same evening"></textarea>
+                                <input type="file" name="proofPhoto" accept="image/*" class="fr-input">
+                                <button type="submit" class="fr-btn w-full">Submit proof</button>
+                            </form>
+                        </div>
+                        <p th:if="${c.status.name() == 'COMPLETED' and c.distributionReport != null}" class="mt-1 text-xs text-leaf-dark">
+                            &#10003; Distribution proof submitted
+                        </p>
+                    </li>
+                </ul>
+            </aside>
+        </div>
+    </th:block>
+
+</main>
+
+</body>
+</html>

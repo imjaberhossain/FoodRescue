@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Log in')}"></head>
+<body class="bg-paper font-sans text-ink antialiased">
+
+<header th:replace="~{fragments :: navbar}"></header>
+
+<main class="mx-auto max-w-md px-4 py-12">
+    <h1 class="font-display text-3xl font-extrabold">Log in</h1>
+    <p class="mt-2 text-ink/70">Use the email and password you signed up with.</p>
+
+    <div class="mt-6">
+        <div th:replace="~{fragments :: flash}"></div>
+
+        <form th:action="@{/login}" method="post" class="space-y-4 rounded-lg border border-line bg-white p-6">
+            <div>
+                <label for="email" class="fr-label">Email</label>
+                <input id="email" name="email" type="email" required autocomplete="email"
+                       th:value="${email}" class="fr-input" placeholder="you@example.com">
+            </div>
+            <div>
+                <label for="password" class="fr-label">Password</label>
+                <input id="password" name="password" type="password" required autocomplete="current-password"
+                       class="fr-input">
+            </div>
+            <button type="submit" class="fr-btn w-full">Log in</button>
+        </form>
+
+        <p class="mt-4 text-sm text-ink/70">
+            New here? <a th:href="@{/register}" class="font-medium text-leaf underline">Create an account</a>
+        </p>
+    </div>
+</main>
+
+</body>
+</html>

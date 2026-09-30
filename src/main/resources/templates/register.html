@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Create account')}"></head>
+<body class="bg-paper font-sans text-ink antialiased">
+
+<header th:replace="~{fragments :: navbar}"></header>
+
+<main class="mx-auto max-w-xl px-4 py-12">
+    <h1 class="font-display text-3xl font-extrabold">Create your account</h1>
+    <p class="mt-2 text-ink/70">Choose how you will use FoodRescue.</p>
+
+    <div th:replace="~{fragments :: flash}"></div>
+
+    <!-- enctype=multipart/form-data is required because NGOs/Volunteers upload a document -->
+    <form th:action="@{/register}" th:object="${registerForm}" method="post" enctype="multipart/form-data"
+          class="mt-6 space-y-5 rounded-lg border border-line bg-white p-6">
+
+        <!-- Account type: 3 roles -->
+        <fieldset>
+            <legend class="fr-label">I am a</legend>
+            <div class="grid gap-3 sm:grid-cols-3">
+                <label class="block cursor-pointer">
+                    <input type="radio" id="roleProvider" th:field="*{role}" value="PROVIDER" class="peer sr-only" onchange="updateRoleUI()">
+                    <span class="block rounded-lg border border-line p-3 text-center peer-checked:border-leaf peer-checked:bg-leaf-tint peer-focus-visible:ring-2 peer-focus-visible:ring-leaf">
+                        <span class="block font-display font-semibold">Food provider</span>
+                        <span class="mt-1 block text-xs text-ink/70">Restaurant, bakery, shop</span>
+                    </span>
+                </label>
+                <label class="block cursor-pointer">
+                    <input type="radio" id="roleNgo" th:field="*{role}" value="NGO" class="peer sr-only" onchange="updateRoleUI()">
+                    <span class="block rounded-lg border border-line p-3 text-center peer-checked:border-leaf peer-checked:bg-leaf-tint peer-focus-visible:ring-2 peer-focus-visible:ring-leaf">
+                        <span class="block font-display font-semibold">NGO</span>
+                        <span class="mt-1 block text-xs text-ink/70">Registered organization</span>
+                    </span>
+                </label>
+                <label class="block cursor-pointer">
+                    <input type="radio" id="roleVolunteer" th:field="*{role}" value="VOLUNTEER" class="peer sr-only" onchange="updateRoleUI()">
+                    <span class="block rounded-lg border border-line p-3 text-center peer-checked:border-leaf peer-checked:bg-leaf-tint peer-focus-visible:ring-2 peer-focus-visible:ring-leaf">
+                        <span class="block font-display font-semibold">Volunteer</span>
+                        <span class="mt-1 block text-xs text-ink/70">Individual helper</span>
+                    </span>
+                </label>
+            </div>
+            <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></p>
+        </fieldset>
+
+        <div>
+            <label for="fullName" class="fr-label">Your full name</label>
+            <input id="fullName" type="text" th:field="*{fullName}" class="fr-input" autocomplete="name">
+            <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></p>
+        </div>
+
+        <!-- Business/org name - hidden for Volunteer via JS below -->
+        <div id="orgNameBlock">
+            <label id="orgLabel" for="organizationName" class="fr-label">Business or organization name</label>
+            <input id="organizationName" type="text" th:field="*{organizationName}" class="fr-input">
+            <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('organizationName')}" th:errors="*{organizationName}"></p>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+                <label for="email" class="fr-label">Email</label>
+                <input id="email" type="email" th:field="*{email}" class="fr-input" autocomplete="email">
+                <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+            </div>
+            <div>
+                <label for="phone" class="fr-label">Phone (optional)</label>
+                <input id="phone" type="tel" th:field="*{phone}" class="fr-input" autocomplete="tel">
+                <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></p>
+            </div>
+        </div>
+
+        <div>
+            <label for="password" class="fr-label">Password</label>
+            <input id="password" type="password" th:field="*{password}" class="fr-input" autocomplete="new-password">
+            <p class="mt-1 text-xs text-ink/60">At least 8 characters.</p>
+            <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+                <label for="address" class="fr-label">Address</label>
+                <input id="address" type="text" th:field="*{address}" class="fr-input" autocomplete="street-address">
+                <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></p>
+            </div>
+            <div>
+                <label for="city" class="fr-label">City</label>
+                <input id="city" type="text" th:field="*{city}" class="fr-input">
+                <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></p>
+            </div>
+        </div>
+
+        <!-- Verification block: only shown for NGO / Volunteer -->
+        <div id="verificationBlock" class="space-y-4 rounded-lg border border-turmeric/40 bg-turmeric/10 p-4">
+            <p class="text-sm font-medium">NGOs and Volunteers must verify with an NID or a relevant document before their requests are trusted by providers.</p>
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div>
+                    <label for="idDocumentType" class="fr-label">Document type</label>
+                    <select id="idDocumentType" th:field="*{idDocumentType}" class="fr-input">
+                        <option value="">Choose one</option>
+                        <option value="NID">National ID (NID)</option>
+                        <option value="Passport">Passport</option>
+                        <option value="Trade License">Trade / Registration certificate</option>
+                        <option value="Student ID">Student ID</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="idDocumentNumber" class="fr-label">Document number</label>
+                    <input id="idDocumentNumber" type="text" th:field="*{idDocumentNumber}" class="fr-input">
+                </div>
+            </div>
+            <div>
+                <label for="idDocumentFile" class="fr-label">Upload a clear photo/scan of the document</label>
+                <input id="idDocumentFile" type="file" name="idDocumentFile" accept="image/*,.pdf" class="fr-input">
+                <p class="mt-1 text-xs text-ink/60">An admin reviews this before your account shows as "Verified". You can still browse and request food while pending.</p>
+            </div>
+        </div>
+
+        <button type="submit" class="fr-btn w-full">Create account</button>
+    </form>
+
+    <p class="mt-4 text-sm text-ink/70">
+        Already have an account? <a th:href="@{/login}" class="font-medium text-leaf underline">Log in</a>
+    </p>
+</main>
+
+<script>
+    // Shows/hides the org-name and verification blocks based on the chosen role,
+    // and updates the org-name label so it makes sense for an NGO vs a Provider.
+    function updateRoleUI() {
+        var role = document.querySelector('input[name="role"]:checked');
+        role = role ? role.value : 'PROVIDER';
+
+        var orgBlock = document.getElementById('orgNameBlock');
+        var orgLabel = document.getElementById('orgLabel');
+        var verifyBlock = document.getElementById('verificationBlock');
+
+        if (role === 'VOLUNTEER') {
+            orgBlock.style.display = 'none';
+            verifyBlock.style.display = 'block';
+        } else if (role === 'NGO') {
+            orgBlock.style.display = 'block';
+            orgLabel.textContent = 'Organization name';
+            verifyBlock.style.display = 'block';
+        } else {
+            orgBlock.style.display = 'block';
+            orgLabel.textContent = 'Business or restaurant name';
+            verifyBlock.style.display = 'none';
+        }
+    }
+    document.addEventListener('DOMContentLoaded', updateRoleUI);
+</script>
+
+</body>
+</html>

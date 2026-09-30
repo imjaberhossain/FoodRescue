@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Admin - Verifications')}"></head>
+<body class="bg-paper font-sans text-ink antialiased">
+
+<header th:replace="~{fragments :: navbar}"></header>
+
+<main class="mx-auto max-w-4xl px-4 py-10">
+    <h1 class="font-display text-3xl font-extrabold">NID / document verification</h1>
+    <p class="mt-1 text-ink/70">Review each NGO's or Volunteer's uploaded document, then approve or reject it.</p>
+
+    <div th:replace="~{fragments :: flash}"></div>
+
+    <div th:if="${#lists.isEmpty(pending)}" class="mt-6 rounded-lg border border-dashed border-line bg-white p-8 text-sm text-ink/70">
+        Nothing waiting for review right now.
+    </div>
+
+    <ul th:unless="${#lists.isEmpty(pending)}" class="mt-6 divide-y divide-line rounded-lg border border-line bg-white">
+        <li th:each="row : ${pending}" class="flex flex-col gap-3 p-5 sm:flex-row sm:items-start sm:justify-between">
+            <div class="min-w-0">
+                <p class="font-medium">
+                    <span th:text="${row.name}">Name</span>
+                    <span class="ml-2 rounded-full bg-ink/5 px-2 py-0.5 text-xs font-medium text-ink/70" th:text="${row.type}">NGO</span>
+                </p>
+                <p class="text-sm text-ink/70" th:text="${row.email} + (${row.phone} != null ? ' - ' + ${row.phone} : '')">email - phone</p>
+                <p class="text-sm text-ink/70" th:text="${row.city}">City</p>
+                <p class="mt-1 text-sm text-ink/70">
+                    Document: <span th:text="${row.idDocumentType}">NID</span> #<span th:text="${row.idDocumentNumber}">1234</span>
+                </p>
+                <a th:if="${row.idDocumentPath}" th:href="@{'/uploads/' + ${row.idDocumentPath}}" target="_blank"
+                   class="mt-1 inline-block text-sm font-medium text-leaf underline">View uploaded document</a>
+            </div>
+
+            <div class="flex shrink-0 gap-2">
+                <form th:if="${row.type == 'NGO'}" th:action="@{/admin/verifications/organization/{id}(id=${row.id})}" method="post">
+                    <input type="hidden" name="decision" value="VERIFIED">
+                    <button type="submit" class="fr-btn">Approve</button>
+                </form>
+                <form th:if="${row.type == 'NGO'}" th:action="@{/admin/verifications/organization/{id}(id=${row.id})}" method="post">
+                    <input type="hidden" name="decision" value="REJECTED">
+                    <button type="submit" class="fr-btn-danger">Reject</button>
+                </form>
+                <form th:if="${row.type == 'VOLUNTEER'}" th:action="@{/admin/verifications/volunteer/{id}(id=${row.id})}" method="post">
+                    <input type="hidden" name="decision" value="VERIFIED">
+                    <button type="submit" class="fr-btn">Approve</button>
+                </form>
+                <form th:if="${row.type == 'VOLUNTEER'}" th:action="@{/admin/verifications/volunteer/{id}(id=${row.id})}" method="post">
+                    <input type="hidden" name="decision" value="REJECTED">
+                    <button type="submit" class="fr-btn-danger">Reject</button>
+                </form>
+            </div>
+        </li>
+    </ul>
+
+    <p class="mt-6 text-sm">
+        <a th:href="@{/admin/reports}" class="font-medium text-leaf underline">Go to reported listings &rarr;</a>
+    </p>
+</main>
+
+</body>
+</html>
