@@ -5,7 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-/** Makes "currentUser" available in every HTML page (used by the top menu). */
+//This class acts as a global helper—it automatically runs before any page loads,
+// checks if a user is logged in, and attaches currentUser to the view.
 @ControllerAdvice
 public class GlobalModelAdvice {
 
