@@ -27,14 +27,15 @@ public class ProfileController {
         this.leaderboardService = leaderboardService;
         this.providerRepo = providerRepo;
     }
-
+    //Handles GET requests to display the user profile page (/profile).
     @GetMapping("/profile")
     public String viewProfile(HttpSession session, Model model) {
-        SessionUser user = SessionUser.from(session);
+        SessionUser user = SessionUser.from(session);//check session
         if (user == null) return "redirect:/login";
 
+            //// 2. Fetch profile data and add it to the view model
         model.addAttribute("profile", profileService.loadProfile(user.getId()));
-        if (!model.containsAttribute("profileForm")) {
+        if (!model.containsAttribute("profileForm")) { //profile deta load
             model.addAttribute("profileForm", new ProfileForm());
         }
 
@@ -46,13 +47,14 @@ public class ProfileController {
         }
         return "profile";
     }
-
+  //Handles POST requests for submitting profile updates (/profile).
     @PostMapping("/profile")
     public String updateProfile(@Valid @ModelAttribute("profileForm") ProfileForm form,
                                 BindingResult bindingResult,
                                 HttpSession session,
                                 Model model,
                                 RedirectAttributes redirectAttributes) {
+        //  Verify user authentication session
         SessionUser user = SessionUser.from(session);
         if (user == null) return "redirect:/login";
 
