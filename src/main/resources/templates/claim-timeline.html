@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Food journey')}"></head>
+<body class="bg-paper font-sans text-ink antialiased">
+
+<header th:replace="~{fragments :: navbar}"></header>
+
+<main class="mx-auto max-w-xl px-4 py-10">
+    <h1 class="font-display text-3xl font-extrabold">Food journey</h1>
+    <p class="mt-1 text-ink/70">From posting to distribution, at a glance.</p>
+
+    <p th:if="${error}" class="mt-4 rounded-md border border-chili/30 bg-chili/10 px-4 py-3 text-sm text-chili" th:text="${error}"></p>
+
+    <ol th:if="${steps}" class="mt-6 space-y-0">
+        <li th:each="step, iter : ${steps}" class="relative flex gap-4 pb-8">
+            <div class="flex flex-col items-center">
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+                      th:classappend="${step.done} ? 'bg-leaf text-white' : 'bg-gray-200 text-gray-400'">
+                    <span th:text="${iter.count}">1</span>
+                </span>
+                <span th:unless="${iter.last}" class="mt-1 w-px flex-1"
+                      th:classappend="${step.done} ? 'bg-leaf' : 'bg-gray-200'"></span>
+            </div>
+            <div class="-mt-1">
+                <p class="font-medium" th:classappend="${step.done} ? 'text-ink' : 'text-ink/40'" th:text="${step.label}">Step</p>
+                <p th:if="${step.timestamp != null}" class="text-sm text-ink/60"
+                   th:text="${#temporals.format(step.timestamp, 'dd MMM, hh:mm a')}">21 Sep</p>
+                <p th:unless="${step.timestamp != null}" class="text-sm text-ink/40">Not yet</p>
+            </div>
+        </li>
+    </ol>
+
+    <a th:href="@{/dashboard}" class="fr-btn-outline">Back to dashboard</a>
+</main>
+
+</body>
+</html>

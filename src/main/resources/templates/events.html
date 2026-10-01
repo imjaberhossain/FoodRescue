@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Events')}"></head>
+<body class="bg-paper font-sans text-ink antialiased">
+
+<header th:replace="~{fragments :: navbar}"></header>
+
+<main class="mx-auto max-w-4xl px-4 py-10">
+    <h1 class="font-display text-3xl font-extrabold">Upcoming distribution events</h1>
+    <p class="mt-1 text-ink/70">NGOs and Volunteers post their upcoming events here, so providers know in advance where food will be needed.</p>
+
+    <div th:replace="~{fragments :: flash}"></div>
+
+    <div class="grid gap-8 lg:grid-cols-12">
+
+        <section class="lg:col-span-7">
+            <form th:action="@{/events}" method="get" class="mb-4 flex gap-2">
+                <input type="search" name="keyword" th:value="${keyword}" class="fr-input" placeholder="Search by city or area">
+                <button type="submit" class="fr-btn">Search</button>
+            </form>
+
+            <div th:if="${#lists.isEmpty(upcomingEvents)}" class="rounded-lg border border-dashed border-line bg-white p-8 text-sm text-ink/70">
+                No upcoming events posted yet.
+            </div>
+
+            <ul th:unless="${#lists.isEmpty(upcomingEvents)}" class="space-y-3">
+                <li th:each="e : ${upcomingEvents}" class="rounded-lg border border-line bg-white p-4">
+                    <p class="font-display font-semibold" th:text="${e.title}">Event title</p>
+                    <p class="text-sm text-ink/70">
+                        by <span th:text="${e.hostUser.fullName}">Host</span>
+                        on <span th:text="${#temporals.format(e.eventDate, 'dd MMM, hh:mm a')}">21 Sep</span>
+                    </p>
+                    <p class="text-sm text-ink/70" th:text="${e.location} + ', ' + ${e.city}">Location</p>
+                    <p th:if="${e.description}" class="mt-1 text-sm text-ink/80" th:text="${e.description}"></p>
+                    <p th:if="${currentUser.provider}" class="mt-2 text-xs text-ink/50">
+                        You can post food for this event from your <a th:href="@{/dashboard}" class="text-leaf underline">dashboard</a> and mention it in the notes.
+                    </p>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Only NGOs/Volunteers post events -->
+        <section th:if="${currentUser.claimant}" class="lg:col-span-5">
+            <h2 class="font-display text-xl font-semibold">Post an event</h2>
+            <form th:action="@{/events}" th:object="${eventForm}" method="post"
+                  class="mt-3 space-y-4 rounded-lg border border-line bg-white p-5">
+                <div>
+                    <label for="title" class="fr-label">Event title</label>
+                    <input id="title" type="text" th:field="*{title}" class="fr-input" placeholder="Weekend food drive">
+                    <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+                </div>
+                <div>
+                    <label for="eventDate" class="fr-label">Date and time</label>
+                    <input id="eventDate" type="datetime-local" th:field="*{eventDate}" class="fr-input">
+                    <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('eventDate')}" th:errors="*{eventDate}"></p>
+                </div>
+                <div>
+                    <label for="location" class="fr-label">Location</label>
+                    <input id="location" type="text" th:field="*{location}" class="fr-input">
+                    <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('location')}" th:errors="*{location}"></p>
+                </div>
+                <div>
+                    <label for="city" class="fr-label">City</label>
+                    <input id="city" type="text" th:field="*{city}" class="fr-input">
+                    <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></p>
+                </div>
+                <div>
+                    <label for="description" class="fr-label">Description (optional)</label>
+                    <textarea id="description" rows="3" th:field="*{description}" class="fr-input"></textarea>
+                </div>
+                <button type="submit" class="fr-btn w-full">Post event</button>
+            </form>
+
+            <h3 class="mt-6 font-display text-lg font-semibold">Your events</h3>
+            <div th:if="${#lists.isEmpty(myEvents)}" class="mt-2 rounded-lg border border-dashed border-line bg-white p-4 text-sm text-ink/70">
+                You haven't posted any events yet.
+            </div>
+            <ul th:unless="${#lists.isEmpty(myEvents)}" class="mt-2 divide-y divide-line rounded-lg border border-line bg-white">
+                <li th:each="e : ${myEvents}" class="flex items-center justify-between p-3">
+                    <div>
+                        <p class="text-sm font-medium" th:text="${e.title}">Title</p>
+                        <p class="text-xs text-ink/60" th:text="${#temporals.format(e.eventDate, 'dd MMM, hh:mm a')}">21 Sep</p>
+                    </div>
+                    <form th:action="@{/events/{id}/delete(id=${e.id})}" method="post">
+                        <button type="submit" class="text-xs text-chili underline">Remove</button>
+                    </form>
+                </li>
+            </ul>
+        </section>
+    </div>
+</main>
+
+</body>
+</html>

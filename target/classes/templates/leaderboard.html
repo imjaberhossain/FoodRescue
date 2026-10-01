@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Leaderboard')}"></head>
+<body class="bg-paper font-sans text-ink antialiased">
+
+<header th:replace="~{fragments :: navbar}"></header>
+
+<main class="mx-auto max-w-2xl px-4 py-10">
+    <h1 class="font-display text-3xl font-extrabold">Top NGOs &amp; Volunteers</h1>
+    <p class="mt-1 text-ink/70">Ranked by the number of food pickups they have completed.</p>
+
+    <div th:if="${#lists.isEmpty(topClaimants)}" class="mt-6 rounded-lg border border-dashed border-line bg-white p-8 text-sm text-ink/70">
+        No completed pickups yet - the leaderboard fills in as requests are picked up.
+    </div>
+
+    <ol th:unless="${#lists.isEmpty(topClaimants)}" class="mt-6 space-y-2">
+        <li th:each="entry, iter : ${topClaimants}"
+            class="flex items-center justify-between rounded-lg border border-line bg-white p-4">
+            <div class="flex items-center gap-3">
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-leaf-tint font-display font-extrabold text-leaf-dark"
+                      th:text="${iter.count}">1</span>
+                <div>
+                    <p class="font-medium" th:text="${entry.name}">Name</p>
+                    <p class="text-xs text-ink/60" th:text="${entry.role}">NGO</p>
+                </div>
+            </div>
+            <p class="font-display text-lg font-extrabold text-leaf-dark">
+                <span th:text="${entry.completedPickups}">5</span>
+                <span class="text-sm font-normal text-ink/60">pickups</span>
+            </p>
+        </li>
+    </ol>
+</main>
+
+</body>
+</html>

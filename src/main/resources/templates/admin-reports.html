@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Admin - Reports')}"></head>
+<body class="bg-paper font-sans text-ink antialiased">
+
+<header th:replace="~{fragments :: navbar}"></header>
+
+<main class="mx-auto max-w-4xl px-4 py-10">
+    <h1 class="font-display text-3xl font-extrabold">Reported listings &amp; requests</h1>
+    <p class="mt-1 text-ink/70">Users flagged these as a possible scam, fake post, or misuse.</p>
+
+    <div th:replace="~{fragments :: flash}"></div>
+
+    <div th:if="${#lists.isEmpty(reports)}" class="mt-6 rounded-lg border border-dashed border-line bg-white p-8 text-sm text-ink/70">
+        No reports yet.
+    </div>
+
+    <ul th:unless="${#lists.isEmpty(reports)}" class="mt-6 divide-y divide-line rounded-lg border border-line bg-white">
+        <li th:each="r : ${reports}" class="flex flex-col gap-2 p-5 sm:flex-row sm:items-start sm:justify-between">
+            <div class="min-w-0">
+                <p class="text-sm text-ink/70">
+                    Reported by <span class="font-medium" th:text="${r.reporterUser.fullName}">User</span>
+                    on <span th:text="${#temporals.format(r.createdAt, 'dd MMM, hh:mm a')}">21 Sep</span>
+                </p>
+                <p class="font-medium" th:if="${r.listing != null}" th:text="'Listing: ' + ${r.listing.title}">Listing: title</p>
+                <p class="font-medium" th:if="${r.claim != null}" th:text="'Request on: ' + ${r.claim.listing.title}">Request on: title</p>
+                <p class="mt-1 text-sm text-ink/80" th:text="${r.reason}">Reason text</p>
+            </div>
+            <div class="flex shrink-0 items-center gap-2">
+                <span class="rounded-full bg-ink/5 px-2.5 py-1 text-xs font-medium" th:text="${r.status}">OPEN</span>
+                <form th:if="${r.status.name() == 'OPEN'}" th:action="@{/admin/reports/{id}(id=${r.id})}" method="post">
+                    <input type="hidden" name="decision" value="REVIEWED">
+                    <button type="submit" class="fr-btn-outline">Mark reviewed</button>
+                </form>
+                <form th:if="${r.status.name() == 'OPEN'}" th:action="@{/admin/reports/{id}(id=${r.id})}" method="post">
+                    <input type="hidden" name="decision" value="DISMISSED">
+                    <button type="submit" class="fr-btn-danger">Dismiss</button>
+                </form>
+            </div>
+        </li>
+    </ul>
+</main>
+
+</body>
+</html>

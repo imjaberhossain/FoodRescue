@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- ===== Shared <head>: fonts, Tailwind CSS (CDN) and small helper styles ===== -->
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' - FoodRescue'">FoodRescue</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ink: '#14211B',
+                        paper: '#FBFAF6',
+                        line: '#DAE2D6',
+                        leaf: { DEFAULT: '#1F6F4A', dark: '#175A3B', tint: '#E7F0E4' },
+                        turmeric: '#F2B33D',
+                        chili: '#C93C2B'
+                    },
+                    fontFamily: {
+                        display: ['"Bricolage Grotesque"', 'system-ui', 'sans-serif'],
+                        sans: ['"Instrument Sans"', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer components {
+            .fr-input {
+                @apply w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink placeholder:text-ink/40 focus:border-leaf focus:outline-none focus:ring-2 focus:ring-leaf/30;
+            }
+            .fr-label {
+                @apply mb-1 block text-sm font-medium text-ink;
+            }
+            .fr-btn {
+                @apply inline-flex items-center justify-center rounded-md bg-leaf px-4 py-2.5 text-sm font-semibold text-white hover:bg-leaf-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-leaf focus-visible:ring-offset-2;
+            }
+            .fr-btn-outline {
+                @apply inline-flex items-center justify-center rounded-md border border-ink/20 bg-white px-4 py-2.5 text-sm font-semibold text-ink hover:bg-leaf-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-leaf focus-visible:ring-offset-2;
+            }
+            .fr-btn-danger {
+                @apply inline-flex items-center justify-center rounded-md border border-chili/30 bg-white px-4 py-2.5 text-sm font-semibold text-chili hover:bg-chili/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-chili focus-visible:ring-offset-2;
+            }
+        }
+    </style>
+</head>
+
+<!-- ===== Top menu ===== -->
+<header th:fragment="navbar" class="border-b border-line bg-paper">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+        <a th:href="@{/}" class="font-display text-xl font-extrabold text-leaf">FoodRescue</a>
+        <nav class="flex items-center gap-2 text-sm">
+            <th:block th:if="${currentUser != null}">
+                <a th:href="@{/profile}" class="mr-1 hidden font-medium text-ink/70 hover:text-leaf sm:inline" th:text="${currentUser.fullName}">Name</a>
+                <a th:href="@{/dashboard}" class="rounded-md px-3 py-2 font-medium hover:bg-leaf-tint">Dashboard</a>
+                <a th:href="@{/profile}" class="rounded-md px-3 py-2 font-medium hover:bg-leaf-tint">Profile</a>
+                <a th:href="@{/leaderboard}" class="rounded-md px-3 py-2 font-medium hover:bg-leaf-tint">Leaderboard</a>
+                <a th:href="@{/events}" class="rounded-md px-3 py-2 font-medium hover:bg-leaf-tint">Events</a>
+                <a th:href="@{/notifications}" class="relative rounded-md px-3 py-2 font-medium hover:bg-leaf-tint">
+                    &#128276;
+                    <span th:if="${unreadNotifications > 0}"
+                          class="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-chili text-[10px] font-bold text-white"
+                          th:text="${unreadNotifications}">3</span>
+                </a>
+                <a th:if="${currentUser.admin}" th:href="@{/admin/verifications}" class="rounded-md px-3 py-2 font-medium text-chili hover:bg-chili/10">Admin</a>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="rounded-md border border-line px-3 py-2 font-medium hover:bg-leaf-tint">Log out</button>
+                </form>
+            </th:block>
+            <th:block th:if="${currentUser == null}">
+                <a th:href="@{/login}" class="rounded-md px-3 py-2 font-medium hover:bg-leaf-tint">Log in</a>
+                <a th:href="@{/register}" class="fr-btn">Create account</a>
+            </th:block>
+        </nav>
+    </div>
+</header>
+
+<!-- ===== Success / error messages ===== -->
+<div th:fragment="flash">
+    <p th:if="${success}" th:text="${success}" role="status"
+       class="mb-4 rounded-md border border-leaf/30 bg-leaf-tint px-4 py-3 text-sm text-leaf-dark"></p>
+    <p th:if="${error}" th:text="${error}" role="alert"
+       class="mb-4 rounded-md border border-chili/30 bg-chili/10 px-4 py-3 text-sm text-chili"></p>
+</div>
+
+<!-- ===== Small "★ 4.6 (12)" rating readout. Shows "No ratings yet" if never rated. ===== -->
+<span th:fragment="ratingBadge(avg, count)" class="inline-flex items-center gap-1 text-sm">
+    <th:block th:if="${avg != null}">
+        <span class="text-turmeric">&#9733;</span>
+        <span class="font-medium" th:text="${#numbers.formatDecimal(avg, 1, 1)}">4.6</span>
+        <span class="text-ink/50">(<span th:text="${count}">12</span>)</span>
+    </th:block>
+    <span th:if="${avg == null}" class="text-ink/50">No ratings yet</span>
+</span>
+
+<!-- ===== Verification badge for NGOs / Volunteers ===== -->
+<span th:fragment="verificationBadge(status)" th:if="${status != null}"
+      class="rounded-full px-2.5 py-1 text-xs font-medium"
+      th:classappend="${status.badgeClass}" th:text="${status.label}">Verification pending</span>
+
+<!-- ===== One food listing row. The colored strip shows the time left (urgency). =====
+     mode = 'public' (home page) or 'claimant' (NGO/Volunteer - shows the request form) -->
+<article th:fragment="listingRow(l, mode)" class="overflow-hidden rounded-lg border border-line bg-white">
+    <div class="flex">
+        <div class="flex w-28 shrink-0 flex-col items-center justify-center px-2 py-4 text-center sm:w-36"
+             th:classappend="${l.urgencyLevel.stripClass}">
+            <span class="font-display text-xl font-extrabold leading-tight sm:text-2xl" th:text="${l.timeLeftText}">2h 10m left</span>
+            <span class="mt-1 text-xs font-medium" th:text="${l.urgencyLevel.label} + ' priority'">High priority</span>
+        </div>
+
+        <div class="flex min-w-0 flex-1 flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                    <h3 class="font-display text-lg font-semibold leading-snug" th:text="${l.title}">Chicken biryani</h3>
+                    <span class="rounded-full px-2 py-0.5 text-xs font-medium" th:classappend="${l.qualityTag.badgeClass}" th:text="${l.qualityTag.label}">Freshly cooked</span>
+                </div>
+                <p class="mt-0.5 text-sm text-ink/80">
+                    <span class="font-medium" th:text="${l.quantity} + ' ' + ${l.unit}">40 plates</span>
+                    of <span th:text="${#strings.toLowerCase(l.category.name)}">cooked meals</span>
+                    from <span th:text="${l.provider.businessName}">Provider</span>
+                    <span th:if="${l.estimatedBeneficiaries != null}"> - serves about <span th:text="${l.estimatedBeneficiaries}">30</span> people</span>
+                </p>
+                <p class="mt-1 text-sm text-ink/60">
+                    Pickup at <span th:text="${l.pickupLocation} + ', ' + ${l.city}">Location</span>
+                </p>
+                <p class="text-sm text-ink/60">
+                    Pick up by <span th:text="${#temporals.format(l.pickupDeadline, 'dd MMM, hh:mm a')}">21 Sep, 09:00 PM</span>
+                </p>
+                <p th:if="${l.description}" class="mt-1 text-sm text-ink/70" th:text="${l.description}"></p>
+                <form th:if="${currentUser != null}" th:action="@{/listings/{id}/report(id=${l.id})}" method="post" class="mt-1 inline-flex items-center gap-1">
+                    <input type="text" name="reason" placeholder="Report reason" class="fr-input w-40 text-xs" required>
+                    <button type="submit" class="text-xs text-chili underline">Flag this</button>
+                </form>
+            </div>
+
+            <div class="shrink-0" th:if="${mode == 'public'}">
+                <a th:if="${currentUser == null}" th:href="@{/login}" class="fr-btn-outline">Log in to request</a>
+                <a th:if="${currentUser != null}" th:href="@{/dashboard}" class="fr-btn-outline">Open dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Request form: only NGOs/Volunteers see this, on their dashboard -->
+    <form th:if="${mode == 'claimant'}" th:action="@{/listings/{id}/claim(id=${l.id})}" method="post"
+          class="border-t border-line bg-paper/60 p-4">
+        <label th:for="'plan-' + ${l.id}" class="fr-label">How and where will you distribute this food?</label>
+        <textarea th:id="'plan-' + ${l.id}" name="distributionPlan" rows="2" required class="fr-input"
+                  placeholder="e.g. Same-day distribution to 30 families at Mirpur-10 community centre"></textarea>
+        <button type="submit" class="fr-btn mt-2">Send request</button>
+    </form>
+</article>
+
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Your profile')}"></head>
+<body class="bg-paper font-sans text-ink antialiased">
+
+<header th:replace="~{fragments :: navbar}"></header>
+
+<main class="mx-auto max-w-3xl px-4 py-10">
+    <div th:replace="~{fragments :: flash}"></div>
+
+    <div class="grid gap-8 md:grid-cols-5">
+
+        <!-- Left: read-only profile summary -->
+        <section class="md:col-span-3 rounded-lg border border-line bg-white p-6">
+            <div class="flex items-center gap-4">
+                <img th:if="${profile.user.profilePhotoPath}" th:src="@{'/uploads/' + ${profile.user.profilePhotoPath}}"
+                     class="h-16 w-16 rounded-full object-cover" alt="Profile photo">
+                <div th:unless="${profile.user.profilePhotoPath}"
+                     class="flex h-16 w-16 items-center justify-center rounded-full bg-leaf-tint font-display text-xl font-extrabold text-leaf-dark"
+                     th:text="${#strings.substring(profile.user.fullName, 0, 1)}">J</div>
+                <div>
+                    <h1 class="font-display text-2xl font-extrabold" th:text="${profile.user.fullName}">Name</h1>
+                    <p class="text-sm text-ink/60" th:text="${profile.user.role}">PROVIDER</p>
+                </div>
+            </div>
+
+            <p th:if="${profile.user.bio}" class="mt-4 text-sm text-ink/80" th:text="${profile.user.bio}"></p>
+
+            <dl class="mt-5 grid grid-cols-2 gap-4 border-t border-line pt-4 text-sm">
+                <div><dt class="text-ink/50">Email</dt><dd th:text="${profile.user.email}">a@b.com</dd></div>
+                <div><dt class="text-ink/50">Phone</dt><dd th:text="${profile.user.phone ?: '-'}">-</dd></div>
+                <div th:if="${profile.organizationName}"><dt class="text-ink/50">Organization</dt><dd th:text="${profile.organizationName}">-</dd></div>
+                <div th:if="${profile.city}"><dt class="text-ink/50">City</dt><dd th:text="${profile.city}">-</dd></div>
+                <div th:if="${profile.address}"><dt class="text-ink/50">Address</dt><dd th:text="${profile.address}">-</dd></div>
+                <div><dt class="text-ink/50">Member since</dt><dd th:text="${#temporals.format(profile.user.createdAt, 'MMM yyyy')}">Jan 2026</dd></div>
+            </dl>
+
+            <!-- Verification (NGO / Volunteer only) -->
+            <div th:if="${profile.verificationStatus != null}" class="mt-4 flex items-center gap-2 border-t border-line pt-4 text-sm">
+                <span class="text-ink/50">Verification:</span>
+                <span th:replace="~{fragments :: verificationBadge(${profile.verificationStatus})}"></span>
+                <span th:if="${profile.idDocumentType}" class="text-ink/50">(<span th:text="${profile.idDocumentType}">NID</span>)</span>
+            </div>
+
+            <!-- Rating and activity stats -->
+            <div class="mt-4 flex flex-wrap items-center gap-6 border-t border-line pt-4 text-sm">
+                <div th:if="${profile.user.role.name() != 'PROVIDER'}">
+                    <span class="text-ink/50">Rating from providers: </span>
+                    <span th:replace="~{fragments :: ratingBadge(${profile.averageRating}, ${profile.ratingCount})}"></span>
+                </div>
+                <div th:if="${profile.user.role.name() == 'PROVIDER'}">
+                    <span class="text-ink/50">Food listings posted: </span>
+                    <span class="font-medium" th:text="${profile.totalListings}">0</span>
+                </div>
+                <div th:if="${recurringDonor}">
+                    <span class="rounded-full bg-turmeric/25 px-2.5 py-1 text-xs font-medium text-ink">&#127942; Recurring Donor</span>
+                </div>
+                <div th:if="${profile.user.role.name() != 'PROVIDER'}">
+                    <span class="text-ink/50">Pickups completed: </span>
+                    <span class="font-medium" th:text="${profile.totalCompletedPickups}">0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right: editable part -->
+        <section class="md:col-span-2 rounded-lg border border-line bg-white p-6">
+            <h2 class="font-display text-lg font-semibold">Edit profile</h2>
+            <form th:action="@{/profile}" th:object="${profileForm}" method="post" enctype="multipart/form-data" class="mt-3 space-y-4">
+                <div>
+                    <label for="phone2" class="fr-label">Phone</label>
+                    <input id="phone2" type="tel" th:field="*{phone}" class="fr-input">
+                    <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></p>
+                </div>
+                <div>
+                    <label for="bio" class="fr-label">About / bio</label>
+                    <textarea id="bio" rows="4" th:field="*{bio}" class="fr-input" placeholder="A short line about you or your organization"></textarea>
+                    <p class="mt-1 text-xs text-chili" th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}"></p>
+                </div>
+                <div>
+                    <label for="profilePhoto" class="fr-label">Profile photo</label>
+                    <input id="profilePhoto" type="file" name="profilePhoto" accept="image/*" class="fr-input">
+                </div>
+                <button type="submit" class="fr-btn w-full">Save changes</button>
+            </form>
+        </section>
+    </div>
+</main>
+
+</body>
+</html>
