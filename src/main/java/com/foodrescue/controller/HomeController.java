@@ -11,12 +11,14 @@ import java.util.List;
 @Controller
 public class HomeController {
 
+    // Service dependency for retrieving food listings
     private final FoodListingService listingService;
 
     public HomeController(FoodListingService listingService) {
         this.listingService = listingService;
     }
 
+    //Handles GET requests for the home/landing page (/).
     @GetMapping("/")
     public String index(Model model) {
         List<FoodListing> available = listingService.browseAvailable("");

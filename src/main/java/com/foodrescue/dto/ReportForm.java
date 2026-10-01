@@ -2,7 +2,9 @@ package com.foodrescue.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
+/**
+ * Holds and validates the reason submitted when reporting a listing or claim.
+ */
 public class ReportForm {
 
     @NotBlank(message = "Please describe the problem")

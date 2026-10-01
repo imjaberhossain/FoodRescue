@@ -169,6 +169,8 @@
                                       th:classappend="${c.status.badgeClass}" th:text="${c.status.label}">Waiting</span>
                             </div>
 
+                            <!-- Accept/Decline buttons: shown only when claim is PENDING. Provider accepts one request and others are auto-declined -->
+
                             <div class="flex flex-wrap gap-2">
                                 <form th:if="${c.status.name() == 'PENDING'}" th:action="@{/claims/{id}/accept(id=${c.id})}" method="post">
                                     <button type="submit" class="fr-btn" onclick="return confirm('Accept this request? Other requests for this food will be declined.')">Accept</button>

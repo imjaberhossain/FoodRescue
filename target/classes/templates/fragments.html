@@ -101,6 +101,7 @@
 
 <!-- ===== One food listing row. The colored strip shows the time left (urgency). =====
      mode = 'public' (home page) or 'claimant' (NGO/Volunteer - shows the request form) -->
+<!-- listingRow fragment displays each food listing as a card. Shows urgency level, food title, quantity, and claim button based on user role (public or claimant mode) -->
 <article th:fragment="listingRow(l, mode)" class="overflow-hidden rounded-lg border border-line bg-white">
     <div class="flex">
         <div class="flex w-28 shrink-0 flex-col items-center justify-center px-2 py-4 text-center sm:w-36"
