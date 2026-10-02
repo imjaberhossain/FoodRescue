@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface FoodClaimRepository extends JpaRepository<FoodClaim, Long> {
 
-    /** All requests (any status) sent for the listings of one provider. */
+    /** All requests (any status) sent for the listings of one provider... */
     List<FoodClaim> findByListing_Provider_IdOrderByClaimedAtDesc(Long providerId);
 
     /** The still-open (PENDING) requests on one specific listing - what the provider decides between. */
