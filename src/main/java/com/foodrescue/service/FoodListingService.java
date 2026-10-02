@@ -16,7 +16,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+<<<<<<< HEAD
 
+=======
+/**
+ * Handles food listing, claim, priority, and location-related business logic.
+ */
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
 @Service
 public class FoodListingService {
 
@@ -52,7 +58,10 @@ public class FoodListingService {
     private final RatingRepository ratingRepo;
     private final UserRepository userRepo;
     private final FileStorageService fileStorage;
+<<<<<<< HEAD
     private final NotificationService notificationService;
+=======
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
 
     public FoodListingService(FoodListingRepository listingRepo,
                               FoodProviderRepository providerRepo,
@@ -63,8 +72,12 @@ public class FoodListingService {
                               PickupRecordRepository pickupRepo,
                               RatingRepository ratingRepo,
                               UserRepository userRepo,
+<<<<<<< HEAD
                               FileStorageService fileStorage,
                               NotificationService notificationService) {
+=======
+                              FileStorageService fileStorage) {
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
         this.listingRepo = listingRepo;
         this.providerRepo = providerRepo;
         this.orgRepo = orgRepo;
@@ -75,7 +88,10 @@ public class FoodListingService {
         this.ratingRepo = ratingRepo;
         this.userRepo = userRepo;
         this.fileStorage = fileStorage;
+<<<<<<< HEAD
         this.notificationService = notificationService;
+=======
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     }
 
     // ------------------------------------------------------------------
@@ -117,9 +133,13 @@ public class FoodListingService {
         listing.setEstimatedBeneficiaries(form.getEstimatedBeneficiaries());
         listing.setAvailableFrom(form.getAvailableFrom());
         listing.setPickupDeadline(form.getPickupDeadline());
+<<<<<<< HEAD
         FoodListing saved = listingRepo.save(listing);
         notificationService.notifyNearbyClaimantsOfListing(saved);
         return saved;
+=======
+        return listingRepo.save(listing);
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     }
 
     @Transactional(readOnly = true)
@@ -166,7 +186,10 @@ public class FoodListingService {
         }
 
         claim.setStatus(FoodClaim.Status.ACCEPTED);
+<<<<<<< HEAD
         claim.setAcceptedAt(LocalDateTime.now());
+=======
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
         listing.setStatus(FoodListing.Status.CLAIMED);
 
         // Anyone else who requested the same food did not get it this time.
@@ -305,6 +328,7 @@ public class FoodListingService {
         claim.setDistributedAt(LocalDateTime.now());
     }
 
+<<<<<<< HEAD
     /**
      * Builds the "food journey" for one claim: posted -> requested -> accepted -> picked up
      * -> distributed. Only the claimant or the owning provider may view it.
@@ -333,6 +357,8 @@ public class FoodListingService {
 
     public record TimelineStep(String label, LocalDateTime timestamp, boolean done) {}
 
+=======
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     // ------------------------------------------------------------------
     // Enrichment: fills FoodClaim's @Transient display fields (name, rating, distance, ...)
     // ------------------------------------------------------------------

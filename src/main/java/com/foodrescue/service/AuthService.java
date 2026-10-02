@@ -15,7 +15,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+<<<<<<< HEAD
 
+=======
+/**
+ * Handles user registration and authentication-related business logic.
+ */
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
 @Service
 public class AuthService {
 

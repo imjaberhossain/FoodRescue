@@ -102,7 +102,10 @@ CREATE TABLE IF NOT EXISTS food_claims (
     claimant_user_id  BIGINT      NOT NULL REFERENCES users (id),
     distribution_plan TEXT        NOT NULL,
     claimed_at        TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+<<<<<<< HEAD
     accepted_at       TIMESTAMP,
+=======
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     status            VARCHAR(20) NOT NULL DEFAULT 'PENDING'
                       CHECK (status IN ('PENDING', 'ACCEPTED', 'REJECTED', 'COMPLETED', 'CANCELLED')),
     distribution_proof_path VARCHAR(255),
@@ -144,6 +147,7 @@ CREATE TABLE IF NOT EXISTS reports (
     CHECK (listing_id IS NOT NULL OR claim_id IS NOT NULL)
 );
 
+<<<<<<< HEAD
 -- 10) events : an NGO's or Volunteer's upcoming distribution event/campaign,
 --     so providers can see where food will be needed in advance
 CREATE TABLE IF NOT EXISTS events (
@@ -172,6 +176,8 @@ CREATE TABLE IF NOT EXISTS notifications (
 CREATE INDEX IF NOT EXISTS idx_notifications_recipient ON notifications (recipient_user_id, is_read);
 CREATE INDEX IF NOT EXISTS idx_events_city_date ON events (LOWER(city), event_date);
 
+=======
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
 -- Indexes to keep browsing, searching and claim lookups fast
 CREATE INDEX IF NOT EXISTS idx_listings_status_deadline ON food_listings (status, pickup_deadline);
 CREATE INDEX IF NOT EXISTS idx_listings_city ON food_listings (LOWER(city));

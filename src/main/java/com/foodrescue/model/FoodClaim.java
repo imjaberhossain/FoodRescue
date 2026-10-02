@@ -53,9 +53,12 @@ public class FoodClaim {
     @Column(name = "claimed_at", nullable = false)
     private LocalDateTime claimedAt = LocalDateTime.now();
 
+<<<<<<< HEAD
     @Column(name = "accepted_at")
     private LocalDateTime acceptedAt;
 
+=======
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Status status = Status.PENDING;
@@ -96,8 +99,11 @@ public class FoodClaim {
     public void setDistributionPlan(String distributionPlan) { this.distributionPlan = distributionPlan; }
     public LocalDateTime getClaimedAt() { return claimedAt; }
     public void setClaimedAt(LocalDateTime claimedAt) { this.claimedAt = claimedAt; }
+<<<<<<< HEAD
     public LocalDateTime getAcceptedAt() { return acceptedAt; }
     public void setAcceptedAt(LocalDateTime acceptedAt) { this.acceptedAt = acceptedAt; }
+=======
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     public Status getStatus() { return status; }
     public void setStatus(Status status) { this.status = status; }
     public String getNote() { return note; }

@@ -164,12 +164,20 @@
                                     </p>
                                     <p class="mt-1 text-sm text-ink/70"><span class="font-medium">Distribution plan: </span><span th:text="${c.distributionPlan}">Plan text</span></p>
                                     <p th:if="${c.claimantPhone}" class="text-sm text-ink/70">Phone: <span th:text="${c.claimantPhone}">01700000000</span></p>
+<<<<<<< HEAD
                                     <a th:href="@{/claims/{id}/timeline(id=${c.id})}" class="text-xs text-leaf underline">View food journey</a>
+=======
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
                                 </div>
                                 <span class="shrink-0 rounded-full px-2.5 py-1 text-xs font-medium"
                                       th:classappend="${c.status.badgeClass}" th:text="${c.status.label}">Waiting</span>
                             </div>
 
+<<<<<<< HEAD
+=======
+                            <!-- Accept/Decline buttons: shown only when claim is PENDING. Provider accepts one request and others are auto-declined -->
+
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
                             <div class="flex flex-wrap gap-2">
                                 <form th:if="${c.status.name() == 'PENDING'}" th:action="@{/claims/{id}/accept(id=${c.id})}" method="post">
                                     <button type="submit" class="fr-btn" onclick="return confirm('Accept this request? Other requests for this food will be declined.')">Accept</button>
@@ -300,7 +308,10 @@
                             from <span th:text="${c.listing.provider.businessName}">Provider</span>
                         </p>
                         <p class="text-sm text-ink/70" th:text="${c.listing.pickupLocation} + ', ' + ${c.listing.city}">Location</p>
+<<<<<<< HEAD
                         <a th:href="@{/claims/{id}/timeline(id=${c.id})}" class="text-xs text-leaf underline">View food journey</a>
+=======
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
                         <p th:if="${c.status.name() == 'ACCEPTED' and c.listing.provider.user.phone}" class="text-sm text-ink/70">
                             Phone: <span th:text="${c.listing.provider.user.phone}">01700000000</span>
                         </p>

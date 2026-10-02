@@ -63,6 +63,7 @@
                 <a th:href="@{/dashboard}" class="rounded-md px-3 py-2 font-medium hover:bg-leaf-tint">Dashboard</a>
                 <a th:href="@{/profile}" class="rounded-md px-3 py-2 font-medium hover:bg-leaf-tint">Profile</a>
                 <a th:href="@{/leaderboard}" class="rounded-md px-3 py-2 font-medium hover:bg-leaf-tint">Leaderboard</a>
+<<<<<<< HEAD
                 <a th:href="@{/events}" class="rounded-md px-3 py-2 font-medium hover:bg-leaf-tint">Events</a>
                 <a th:href="@{/notifications}" class="relative rounded-md px-3 py-2 font-medium hover:bg-leaf-tint">
                     &#128276;
@@ -70,6 +71,8 @@
                           class="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-chili text-[10px] font-bold text-white"
                           th:text="${unreadNotifications}">3</span>
                 </a>
+=======
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
                 <a th:if="${currentUser.admin}" th:href="@{/admin/verifications}" class="rounded-md px-3 py-2 font-medium text-chili hover:bg-chili/10">Admin</a>
                 <form th:action="@{/logout}" method="post">
                     <button type="submit" class="rounded-md border border-line px-3 py-2 font-medium hover:bg-leaf-tint">Log out</button>

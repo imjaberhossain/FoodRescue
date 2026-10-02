@@ -8,7 +8,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+<<<<<<< HEAD
 
+=======
+/**
+ * Holds the input data needed to create or update a food listing.
+ */
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
 public class ListingForm {
 
     @NotNull(message = "Please choose a food type")

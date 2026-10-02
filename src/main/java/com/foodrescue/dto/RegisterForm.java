@@ -6,7 +6,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
+<<<<<<< HEAD
 
+=======
+/**
+ * Holds and validates user registration input data.
+ */
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
 public class RegisterForm {
 
     @NotNull(message = "Please choose an account type")

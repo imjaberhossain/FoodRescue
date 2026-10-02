@@ -43,9 +43,17 @@ public class FoodListingController {
     public String dashboard(@RequestParam(defaultValue = "") String keyword,
                             HttpSession session,
                             Model model) {
+<<<<<<< HEAD
         SessionUser user = SessionUser.from(session);
         if (user == null) return "redirect:/login";
 
+=======
+        // Check if user is logged in
+        SessionUser user = SessionUser.from(session);
+        if (user == null) return "redirect:/login";
+
+        // Display Provider dashboard or Claimant (NGO/Volunteer) dashboard based on role
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
         if (user.isProvider()) {
             if (!model.containsAttribute("listingForm")) {
                 model.addAttribute("listingForm", newFormWithDefaults(user));
@@ -60,7 +68,15 @@ public class FoodListingController {
         return "dashboard";
     }
 
+<<<<<<< HEAD
     // ---------- Provider: post food ----------
+=======
+// ---------- Provider: post food ----------
+
+    /**
+     * Handles new food donation submissions created by Food Providers.
+     */
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
 
     @PostMapping("/listings")
     public String createListing(@Valid @ModelAttribute("listingForm") ListingForm form,
@@ -70,11 +86,19 @@ public class FoodListingController {
                                 RedirectAttributes redirectAttributes) {
         SessionUser user = SessionUser.from(session);
         if (user == null) return "redirect:/login";
+<<<<<<< HEAD
+=======
+        // Ensure only food providers can access this endpoint
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
         if (!user.isProvider()) {
             redirectAttributes.addFlashAttribute("error", "Only food providers can post food.");
             return "redirect:/dashboard";
         }
 
+<<<<<<< HEAD
+=======
+        // Return to dashboard with error states if form validation fails
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
         if (bindingResult.hasErrors()) {
             fillProviderModel(user, model);
             return "dashboard";
@@ -94,6 +118,13 @@ public class FoodListingController {
 
     // ---------- Provider: decide on requests ----------
 
+<<<<<<< HEAD
+=======
+    /**
+     * Accepts a specific claim request for a food item and auto-rejects other pending requests.
+     */
+
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     @PostMapping("/claims/{id}/accept")
     public String acceptClaim(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttributes) {
         SessionUser user = SessionUser.from(session);
@@ -106,7 +137,11 @@ public class FoodListingController {
         }
         return "redirect:/dashboard";
     }
+<<<<<<< HEAD
 
+=======
+    //Declines a claim request submitted by an NGO or volunteer.
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     @PostMapping("/claims/{id}/reject")
     public String rejectClaim(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttributes) {
         SessionUser user = SessionUser.from(session);
@@ -119,7 +154,13 @@ public class FoodListingController {
         }
         return "redirect:/dashboard";
     }
+<<<<<<< HEAD
 
+=======
+    /**
+     * Confirms that the claimant has picked up the donated food items.
+     */
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     @PostMapping("/claims/{id}/pickup")
     public String confirmPickup(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttributes) {
         SessionUser user = SessionUser.from(session);
@@ -132,7 +173,13 @@ public class FoodListingController {
         }
         return "redirect:/dashboard";
     }
+<<<<<<< HEAD
 
+=======
+    /**
+     * Allows a provider to rate the claimant after a completed pickup.
+     */
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     @PostMapping("/claims/{id}/rate")
     public String rateClaim(@PathVariable Long id,
                             @Valid @ModelAttribute("ratingForm") RatingForm form,
@@ -156,6 +203,13 @@ public class FoodListingController {
 
     // ---------- NGO / Volunteer: request food ----------
 
+<<<<<<< HEAD
+=======
+    /**
+     * Submits a claim request from an NGO or volunteer to request a specific food listing.
+     */
+
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     @PostMapping("/listings/{id}/claim")
     public String requestClaim(@PathVariable Long id,
                                @Valid @ModelAttribute("claimRequestForm") ClaimRequestForm form,
@@ -183,6 +237,13 @@ public class FoodListingController {
 
     // ---------- Anyone: report a listing or a claim ----------
 
+<<<<<<< HEAD
+=======
+    /**
+     * Allows users to report problematic or inappropriate listings.
+     */
+
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     @PostMapping("/listings/{id}/report")
     public String reportListing(@PathVariable Long id,
                                 @Valid @ModelAttribute("reportForm") com.foodrescue.dto.ReportForm form,
@@ -206,6 +267,12 @@ public class FoodListingController {
 
     // ---------- NGO / Volunteer: mandatory proof after distributing the food ----------
 
+<<<<<<< HEAD
+=======
+    /**
+     * Allows NGOs/volunteers to upload/submit mandatory proof of food distribution after pickup.
+     */
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     @PostMapping("/claims/{id}/distribution-proof")
     public String submitDistributionProof(@PathVariable Long id,
                                           @Valid @ModelAttribute("distributionProofForm") com.foodrescue.dto.DistributionProofForm form,
@@ -227,6 +294,7 @@ public class FoodListingController {
         return "redirect:/dashboard";
     }
 
+<<<<<<< HEAD
     // ---------- Anyone involved: view the food journey / timeline for a claim ----------
 
     @GetMapping("/claims/{id}/timeline")
@@ -244,6 +312,14 @@ public class FoodListingController {
 
     // ---------- Helpers ----------
 
+=======
+    // ---------- Helpers ----------
+
+    /**
+     * Pre-populates default location details for a food provider's new listing form.
+     */
+
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     private ListingForm newFormWithDefaults(SessionUser user) {
         ListingForm form = new ListingForm();
         listingService.findProvider(user.getId()).ifPresent((FoodProvider p) -> {
@@ -252,7 +328,13 @@ public class FoodListingController {
         });
         return form;
     }
+<<<<<<< HEAD
 
+=======
+    /**
+     * Populates model attributes required for the Food Provider view (listings, claims, statistics).
+     */
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     private void fillProviderModel(SessionUser user, Model model) {
         List<FoodListing> listings = listingService.listingsForProvider(user.getId());
         model.addAttribute("categories", categoryRepo.findAllByOrderByNameAsc());
@@ -263,13 +345,25 @@ public class FoodListingController {
         model.addAttribute("statClaimed", count(listings, FoodListing.Status.CLAIMED));
         model.addAttribute("statPickedUp", count(listings, FoodListing.Status.PICKED_UP));
     }
+<<<<<<< HEAD
 
+=======
+    /**
+     * Populates model attributes required for the Claimant view (browse available food, search filters, my claims).
+     */
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     private void fillClaimantModel(SessionUser user, String keyword, Model model) {
         model.addAttribute("keyword", keyword);
         model.addAttribute("availableListings", listingService.browseAvailable(keyword));
         model.addAttribute("myClaims", listingService.claimsForClaimant(user.getId()));
     }
+<<<<<<< HEAD
 
+=======
+    /**
+     * Helper method to count food listings matching a specific status (AVAILABLE, CLAIMED, PICKED_UP).
+     */
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     private long count(List<FoodListing> listings, FoodListing.Status status) {
         return listings.stream().filter(l -> l.getStatus() == status).count();
     }

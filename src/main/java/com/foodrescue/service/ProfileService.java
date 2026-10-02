@@ -5,7 +5,13 @@ import com.foodrescue.model.User;
 import com.foodrescue.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+<<<<<<< HEAD
 
+=======
+/**
+ * Handles user profile data and profile-related business logic.
+ */
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
 @Service
 public class ProfileService {
 

@@ -27,6 +27,7 @@ public class ProfileController {
         this.leaderboardService = leaderboardService;
         this.providerRepo = providerRepo;
     }
+<<<<<<< HEAD
 
     @GetMapping("/profile")
     public String viewProfile(HttpSession session, Model model) {
@@ -35,6 +36,17 @@ public class ProfileController {
 
         model.addAttribute("profile", profileService.loadProfile(user.getId()));
         if (!model.containsAttribute("profileForm")) {
+=======
+    //Handles GET requests to display the user profile page (/profile).
+    @GetMapping("/profile")
+    public String viewProfile(HttpSession session, Model model) {
+        SessionUser user = SessionUser.from(session);//check session
+        if (user == null) return "redirect:/login";
+
+            //// 2. Fetch profile data and add it to the view model
+        model.addAttribute("profile", profileService.loadProfile(user.getId()));
+        if (!model.containsAttribute("profileForm")) { //profile deta load
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
             model.addAttribute("profileForm", new ProfileForm());
         }
 
@@ -46,13 +58,21 @@ public class ProfileController {
         }
         return "profile";
     }
+<<<<<<< HEAD
 
+=======
+  //Handles POST requests for submitting profile updates (/profile).
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
     @PostMapping("/profile")
     public String updateProfile(@Valid @ModelAttribute("profileForm") ProfileForm form,
                                 BindingResult bindingResult,
                                 HttpSession session,
                                 Model model,
                                 RedirectAttributes redirectAttributes) {
+<<<<<<< HEAD
+=======
+        //  Verify user authentication session
+>>>>>>> b3947b32b8c1031c4bab383c7ff83f179a94df59
         SessionUser user = SessionUser.from(session);
         if (user == null) return "redirect:/login";
 
