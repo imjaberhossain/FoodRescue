@@ -12,7 +12,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findByHostUser_IdOrderByEventDateAsc(Long hostUserId);
 
-    /** Every future event, optionally filtered by a city/keyword, soonest first. */
+    /** Every future event, optionally filtered by a city/keyword, soonest first...*/
     @Query("""
             select e from Event e
             where e.eventDate > :now
